@@ -6,7 +6,7 @@ const PublicRoute = ({ element }) => {
     return (
         <>
             {userAuthentication.isAuthenticated ? (
-                <Navigate to={"/"} />
+                <Navigate to={"/"} replace={true} />
             ) : (
                 element
             )}

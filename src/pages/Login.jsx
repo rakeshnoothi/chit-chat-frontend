@@ -55,7 +55,6 @@ const Login = () => {
                 }
             )
             .then(res => {
-                // TODO: Do something with the response.
                 const authData = res.data?.body;
                 if (!authData) {
                     toast("Something went wrong!", {

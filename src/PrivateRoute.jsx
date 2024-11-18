@@ -9,7 +9,7 @@ const PrivateRoute = ({ element }) => {
             {userAuthentication.isAuthenticated ? (
                 element
             ) : (
-                <Navigate to={"/login"} />
+                <Navigate to={"/login"} replace={true} />
             )}
         </>
     );
