@@ -7,10 +7,11 @@ import {
     Typography,
 } from "@mui/material";
 
-const ChatOverview = () => {
+const ChatOverview = ({ item }) => {
+    console.log("List data: ", item);
     return (
         <>
-            <ListItem alignItems="flex-start">
+            <ListItem alignItems="flex-start" key={item.id}>
                 <ListItemAvatar>
                     <Avatar
                         alt="Remy Sharp"
@@ -18,7 +19,7 @@ const ChatOverview = () => {
                     />
                 </ListItemAvatar>
                 <ListItemText
-                    primary="Brunch this weekend?"
+                    primary={`${item.firstname} ${item.lastname}`}
                     secondary={
                         <Typography
                             component="span"
@@ -28,7 +29,7 @@ const ChatOverview = () => {
                                 display: "inline",
                             }}
                         >
-                            Ali Connors
+                            {item.username}
                         </Typography>
                     }
                 />
