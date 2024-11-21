@@ -1,23 +1,17 @@
 import { IconButton, Stack } from "@mui/material";
-import ChatIcon from "@mui/icons-material/Chat";
-import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import useDrawerContext from "../hooks/useDrawerContext";
+import appButtons from "../utilComponents/appButtons";
+import useSideBarActiveContext from "../hooks/useSideBarActiveContext";
 
 const Drawer = () => {
-    const { drawerContext, setDrawerContext } = useDrawerContext();
+    const { activeDrawerContext, setActiveDrawerContext } = useDrawerContext();
+    const { setSideBarActiveContext } = useSideBarActiveContext();
 
-    console.log("Drawer context: ", drawerContext);
+    console.log("Active drawer context: ", activeDrawerContext);
 
-    const handleButtonClick = value => {
-        const newDrawerContext = drawerContext.map(button => {
-            if (button.buttonName === value) {
-                return { ...button, isActive: true };
-            } else {
-                return { ...button, isActive: false };
-            }
-        });
-
-        setDrawerContext(newDrawerContext);
+    const handleButtonClick = buttonId => {
+        setActiveDrawerContext(buttonId);
+        setSideBarActiveContext(appButtons[buttonId].subButtons[0]);
     };
 
     return (
@@ -28,20 +22,20 @@ const Drawer = () => {
             spacing={2}
             border={1}
         >
-            <IconButton
-                aria-label="delete"
-                size="small"
-                onClick={() => handleButtonClick("chat")}
-            >
-                <ChatIcon />
-            </IconButton>
-            <IconButton
-                aria-label="delete"
-                size="small"
-                onClick={() => handleButtonClick("friendRequest")}
-            >
-                <PersonAddIcon />
-            </IconButton>
+            {Object.keys(appButtons).map(button => {
+                const currentButton = appButtons[button];
+                return (
+                    <IconButton
+                        size="small"
+                        onClick={() =>
+                            handleButtonClick(currentButton.buttonId)
+                        }
+                        key={currentButton.buttonId}
+                    >
+                        {currentButton.buttonElement}
+                    </IconButton>
+                );
+            })}
         </Stack>
     );
 };

@@ -1,7 +1,7 @@
 import { useContext } from "react";
-import { SideBarActiveContextProviderContext } from "../context/SideBarActiveContextProvider";
+import { SideBarContext } from "../context/SideBarContextProvider";
 
 const useSideBarActiveContext = () => {
-    return useContext(SideBarActiveContextProviderContext);
+    return useContext(SideBarContext);
 };
 export default useSideBarActiveContext;

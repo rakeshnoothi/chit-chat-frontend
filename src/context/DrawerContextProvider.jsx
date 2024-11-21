@@ -3,13 +3,11 @@ import { createContext, useState } from "react";
 export const DrawerContext = createContext();
 
 const DrawerContextProvider = ({ children }) => {
-    const [drawerContext, setDrawerContext] = useState([
-        { buttonName: "chat", isActive: true },
-        { buttonName: "friendRequest", isActive: false },
-    ]);
-
+    const [activeDrawerContext, setActiveDrawerContext] = useState("chat");
     return (
-        <DrawerContext.Provider value={{ drawerContext, setDrawerContext }}>
+        <DrawerContext.Provider
+            value={{ activeDrawerContext, setActiveDrawerContext }}
+        >
             {children}
         </DrawerContext.Provider>
     );

@@ -1,48 +1,32 @@
 import { Button, Stack } from "@mui/material";
 import useSideBarActiveContext from "../hooks/useSideBarActiveContext";
 import useDrawerContext from "../hooks/useDrawerContext";
-import sideBarNavJs from "../componentJs/sideBarNavJs";
-
-const SideBarButtonsRenderer = ({ buttons, handler }) => {
-    return buttons.map(button => {
-        return (
-            <Button
-                variant="outlined"
-                onClick={() => handler(button.buttonName)}
-                key={button.buttonName}
-            >
-                {button.buttonName}
-            </Button>
-        );
-    });
-};
+import appButtons from "../utilComponents/appButtons";
 
 export const SideBarNav = () => {
-    const { sideBarContext, setSideBarContext } = useSideBarActiveContext();
-    const { drawerContext } = useDrawerContext();
+    const { sideBarActiveContext, setSideBarActiveContext } =
+        useSideBarActiveContext();
+    const { activeDrawerContext } = useDrawerContext();
 
-    const drawerActiveButtonName = drawerContext.find(button => {
-        return button.isActive === true;
-    }).buttonName;
+    console.log("side bar active context: ", sideBarActiveContext);
 
-    console.log("Active context: ", sideBarContext);
-
-    const handleButtonClick = clickedButtonName => {
-        console.log("Active button: ", drawerActiveButtonName);
-        const newActiveContext = sideBarNavJs.createNewSideBarContext(
-            drawerActiveButtonName,
-            sideBarContext,
-            clickedButtonName
-        );
-        setSideBarContext(newActiveContext);
+    const handleButtonClick = buttonId => {
+        setSideBarActiveContext(buttonId);
     };
 
     return (
         <Stack direction={"row"} justifyContent={"space-between"}>
-            <SideBarButtonsRenderer
-                buttons={sideBarContext[drawerActiveButtonName]}
-                handler={handleButtonClick}
-            />
+            {appButtons[activeDrawerContext].subButtons.map(button => {
+                return (
+                    <Button
+                        variant="outlined"
+                        onClick={() => handleButtonClick(button)}
+                        key={button}
+                    >
+                        {button}
+                    </Button>
+                );
+            })}
         </Stack>
     );
 };

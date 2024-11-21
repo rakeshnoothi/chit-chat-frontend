@@ -4,8 +4,8 @@ import Drawer from "../component/Drawer";
 import SideBar from "../component/SideBar";
 import ChatSection from "../component/ChatSection";
 import { Stack } from "@mui/material";
-import SideBarActiveContextProvider from "../context/SideBarActiveContextProvider";
 import DrawerContextProvider from "../context/DrawerContextProvider";
+import SideBarContextProvider from "../context/SideBarContextProvider";
 
 const Home = () => {
     return (
@@ -13,11 +13,11 @@ const Home = () => {
             <Logo />
             <Stack direction={"row"} spacing={2} height={"86vh"}>
                 <DrawerContextProvider>
-                    <Drawer />
-                    <SideBarActiveContextProvider>
+                    <SideBarContextProvider>
+                        <Drawer />
                         <SideBar />
                         <ChatSection />
-                    </SideBarActiveContextProvider>
+                    </SideBarContextProvider>
                 </DrawerContextProvider>
             </Stack>
         </Box>
