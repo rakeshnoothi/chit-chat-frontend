@@ -1,9 +1,11 @@
 import { Navigate } from "react-router-dom";
 //hooks import
 import useAuthentication from "./hooks/useAuthentication";
+import webSockets from "./util/webSocket";
 
 const PrivateRoute = ({ element }) => {
     const { userAuthentication } = useAuthentication();
+    webSockets.connect();
     return (
         <>
             {userAuthentication.isAuthenticated ? (

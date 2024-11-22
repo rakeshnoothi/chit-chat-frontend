@@ -6,6 +6,7 @@ import ChatSection from "../component/ChatSection";
 import { Stack } from "@mui/material";
 import DrawerContextProvider from "../context/DrawerContextProvider";
 import SideBarContextProvider from "../context/SideBarContextProvider";
+import ChatContextProvider from "../context/ChatContextProvider";
 
 const Home = () => {
     return (
@@ -15,8 +16,10 @@ const Home = () => {
                 <DrawerContextProvider>
                     <SideBarContextProvider>
                         <Drawer />
-                        <SideBar />
-                        <ChatSection />
+                        <ChatContextProvider>
+                            <SideBar />
+                            <ChatSection />
+                        </ChatContextProvider>
                     </SideBarContextProvider>
                 </DrawerContextProvider>
             </Stack>
