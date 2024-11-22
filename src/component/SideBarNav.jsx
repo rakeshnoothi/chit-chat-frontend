@@ -19,7 +19,11 @@ export const SideBarNav = () => {
             {appButtons[activeDrawerContext].subButtons.map(button => {
                 return (
                     <Button
-                        variant="outlined"
+                        variant={
+                            sideBarActiveContext === button
+                                ? "contained"
+                                : "outlined"
+                        }
                         onClick={() => handleButtonClick(button)}
                         key={button}
                     >

@@ -1,6 +1,6 @@
-import { IconButton, Stack, Typography } from "@mui/material";
-import PersonAddIcon from "@mui/icons-material/PersonAdd";
+import { Stack, Typography } from "@mui/material";
 import useDrawerContext from "../hooks/useDrawerContext";
+import AddFriendDialog from "./AddFriendDialog";
 
 const Heading = () => {
     const { activeDrawerContext } = useDrawerContext();
@@ -10,9 +10,7 @@ const Heading = () => {
             <Typography variant="h6" component="h2" textTransform={"uppercase"}>
                 {activeDrawerContext}
             </Typography>
-            <IconButton aria-label="delete" size="small">
-                <PersonAddIcon />
-            </IconButton>
+            <AddFriendDialog />
         </Stack>
     );
 };

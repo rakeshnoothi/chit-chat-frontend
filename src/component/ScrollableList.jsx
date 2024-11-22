@@ -16,7 +16,16 @@ const ScrollableList = () => {
             .requestInitialListData(sideBarActiveContext, loggedInUserId)
             .then(res => {
                 console.log(res);
-                setListData(res.data.body);
+                const data = res.data.body;
+
+                // mapp the response data based on the active context.
+                const mappedListData = data.map(item => {
+                    return scrollableList.getMappedItem(
+                        sideBarActiveContext,
+                        item
+                    );
+                });
+                setListData(mappedListData);
             })
             .catch(err => console.log(err));
     }, [sideBarActiveContext, loggedInUserId]);

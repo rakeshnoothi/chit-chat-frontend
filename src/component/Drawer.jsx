@@ -31,6 +31,11 @@ const Drawer = () => {
                             handleButtonClick(currentButton.buttonId)
                         }
                         key={currentButton.buttonId}
+                        color={
+                            activeDrawerContext === currentButton.buttonId
+                                ? "primary"
+                                : "default"
+                        }
                     >
                         {currentButton.buttonElement}
                     </IconButton>
