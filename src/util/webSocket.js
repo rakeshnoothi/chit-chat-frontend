@@ -1,12 +1,8 @@
 import { Client } from "@stomp/stompjs";
 
-const authData = JSON.parse(localStorage.getItem("authData"));
-
 const client = new Client({
-    brokerURL: "ws://localhost:8080/ws",
-    connectHeaders: {
-        Authorization: `Bearer ${authData?.token}`,
-    },
+    brokerURL: import.meta.env.VITE_CHIT_CHAT_WEBSOCKET_BASE_URL,
+
     debug: function (str) {
         console.log(str);
     },
@@ -15,11 +11,19 @@ const client = new Client({
     heartbeatOutgoing: 4000,
 });
 
+const PRIVATE_MESSAGE_SENDING_URL = "/app/private/message";
+const PRIVATE_MESSAGE_RECEIVING_URL = "/user/queue/private/messages";
+
 const webSockets = {
-    connect: () => client.activate(),
+    connect: token => {
+        client.connectHeaders = {
+            Authorization: `Bearer ${token}`,
+        };
+        client.activate();
+    },
     sendMessage: function (message) {
         client.publish({
-            destination: "/app/private/message",
+            destination: PRIVATE_MESSAGE_SENDING_URL,
             body: JSON.stringify(message),
             skipContentLengthHeader: true,
         });
@@ -33,7 +37,7 @@ client.onConnect = function (frame) {
     // Do something, all subscribes must be done is this callback
     // This is needed because this will be executed after a (re)connect
     console.log("webSockets connected: ", frame);
-    client.subscribe("/user/queue/private/messages", res => {
+    client.subscribe(PRIVATE_MESSAGE_RECEIVING_URL, res => {
         const message = JSON.parse(res.body);
         if (message) {
             // do furthur operations.

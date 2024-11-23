@@ -1,5 +1,6 @@
 import axios from "axios";
 
+// use this axios instance only for authenticated users.
 const axiosInstance = axios.create({
     baseURL: import.meta.env.VITE_CHIT_CHAT_REST_API_BASE_URL,
     headers: {

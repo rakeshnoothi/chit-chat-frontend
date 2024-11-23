@@ -5,7 +5,7 @@ import webSockets from "./util/webSocket";
 
 const PrivateRoute = ({ element }) => {
     const { userAuthentication } = useAuthentication();
-    webSockets.connect();
+    webSockets.connect(userAuthentication?.authData.user.token);
     return (
         <>
             {userAuthentication.isAuthenticated ? (
