@@ -21,7 +21,7 @@ const emails = ["username@gmail.com", "user02@gmail.com"];
 function SimpleDialog(props) {
     const { userAuthentication } = useAuthentication();
     const [addFriendList, setAddFriendList] = useState([]);
-    const { onClose, selectedValue, open } = props;
+    const { open, selectedValue, onClose } = props;
     let delay = null;
 
     const handleClose = () => {
@@ -74,7 +74,6 @@ function SimpleDialog(props) {
                 console.log("Friends error: ", err);
             });
     };
-
     return (
         <Dialog onClose={handleClose} open={open}>
             <DialogTitle>Add Friend</DialogTitle>

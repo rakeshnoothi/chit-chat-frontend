@@ -29,21 +29,18 @@ const webSockets = {
         });
     },
     onMessage: callback => {
-        callback();
+        client.onConnect = function (frame) {
+            // Do something, all subscribes must be done is this callback
+            // This is needed because this will be executed after a (re)connect
+            console.log("webSockets connected: ", frame);
+            client.subscribe(PRIVATE_MESSAGE_RECEIVING_URL, res => {
+                const message = JSON.parse(res.body);
+                if (message) {
+                    callback(message);
+                }
+            });
+        };
     },
-};
-
-client.onConnect = function (frame) {
-    // Do something, all subscribes must be done is this callback
-    // This is needed because this will be executed after a (re)connect
-    console.log("webSockets connected: ", frame);
-    client.subscribe(PRIVATE_MESSAGE_RECEIVING_URL, res => {
-        const message = JSON.parse(res.body);
-        if (message) {
-            // do furthur operations.
-        }
-        console.log("message from other side: ", message);
-    });
 };
 
 client.onStompError = function (frame) {

@@ -8,9 +8,27 @@ import useAuthentication from "../hooks/useAuthentication";
 
 const ChatArea = () => {
     const [chatMessages, setChatMessages] = useState({});
-    const formRef = useRef("");
     const { userAuthentication } = useAuthentication();
     const { activeChat } = useChatContext();
+    const formRef = useRef("");
+
+    webSockets.onMessage(message => {
+        console.log("Message from chat area: ", message);
+
+        const receivedMessage = {
+            ...message,
+            isSent: false,
+            id: crypto.randomUUID(),
+        };
+        setChatMessages(previousMessages => {
+            const allChatMessages = createNewAllChatMessages(
+                previousMessages,
+                message.fromUser,
+                receivedMessage
+            );
+            return allChatMessages;
+        });
+    });
 
     const handleSendMessage = e => {
         e.preventDefault();
@@ -26,24 +44,38 @@ const ChatArea = () => {
             webSockets.sendMessage(chatMessage);
 
             // Add extra information if needed.
-            const sentChatMessage = { ...chatMessage, isSent: true };
+            const sentChatMessage = {
+                ...chatMessage,
+                isSent: true,
+                id: crypto.randomUUID(),
+            };
 
             //store all the messages in application state.
-            const allMessages = { ...chatMessages };
-            const specificChatMessages = allMessages[chatMessage.toUser];
-            if (specificChatMessages) {
-                specificChatMessages.push(sentChatMessage);
-            } else {
-                // create new key with the toUsername
-                allMessages[chatMessage.toUser] = [sentChatMessage];
-            }
-            setChatMessages(allMessages);
+            const allChatMessages = createNewAllChatMessages(
+                chatMessages,
+                chatMessage.toUser,
+                sentChatMessage
+            );
+            setChatMessages(allChatMessages);
         } catch (err) {
             // Handle error somehow
             console.log("Error due to STOMP: ", err);
         } finally {
             formRef.current["message"].value = "";
         }
+    };
+
+    const createNewAllChatMessages = (previousMessages, user, newMessage) => {
+        const allMessages = { ...previousMessages };
+
+        if (allMessages[user]) {
+            allMessages[user] = [...allMessages[user], newMessage];
+        } else {
+            // create new key with the toUsername
+            allMessages[user] = [newMessage];
+        }
+
+        return allMessages;
     };
 
     return (

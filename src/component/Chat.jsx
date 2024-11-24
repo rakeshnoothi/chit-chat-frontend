@@ -18,6 +18,7 @@ const Message = ({ message }) => {
 const Chat = ({ chatMessages }) => {
     const { activeChat } = useChatContext();
     console.log("activeChat: ", activeChat);
+
     if (!chatMessages) return <div></div>;
     return (
         <Stack
@@ -26,9 +27,11 @@ const Chat = ({ chatMessages }) => {
             overflow={"scroll"}
             flexGrow={1}
             border={1}
+            padding={1}
         >
             {chatMessages.map(message => {
-                return <Message message={message} key={message.message} />;
+                console.log("chat message inside chat: ", message);
+                return <Message message={message} key={message.id} />;
             })}
         </Stack>
     );
