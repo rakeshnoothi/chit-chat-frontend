@@ -1,15 +1,24 @@
 import { List } from "@mui/material";
-import ChatOverview from "./ChatOverview";
 import { useEffect, useState } from "react";
 import useAuthentication from "../hooks/useAuthentication";
 import useSideBarActiveContext from "../hooks/useSideBarActiveContext";
 import scrollableList from "../componentJs/scrollableList";
+import appButtons from "../utilComponents/appButtons";
+import useDrawerContext from "../hooks/useDrawerContext";
 
 const ScrollableList = () => {
     const { userAuthentication } = useAuthentication();
     const { sideBarActiveContext } = useSideBarActiveContext();
+    const { activeDrawerContext } = useDrawerContext();
     const [listData, setListData] = useState([]);
     const loggedInUserId = userAuthentication.authData.user.id;
+
+    const handleListData = itemId => {
+        const updatedListData = listData.filter(item => {
+            return item.id !== itemId;
+        });
+        setListData(updatedListData);
+    };
 
     useEffect(() => {
         scrollableList
@@ -18,7 +27,7 @@ const ScrollableList = () => {
                 console.log(res);
                 const data = res.data.body;
 
-                // mapp the response data based on the active context.
+                // map the response data based on the active context.
                 const mappedListData = data.map(item => {
                     return scrollableList.getMappedItem(
                         sideBarActiveContext,
@@ -41,7 +50,11 @@ const ScrollableList = () => {
         >
             {listData.length >= 1 ? (
                 listData.map(item => {
-                    return <ChatOverview item={item} key={item.id} />;
+                    return appButtons[activeDrawerContext].overViewElement(
+                        item,
+                        item.tagLine,
+                        handleListData
+                    );
                 })
             ) : (
                 <div>Nothing to show</div>

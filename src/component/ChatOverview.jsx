@@ -7,10 +7,18 @@ import {
     ListItemButton,
 } from "@mui/material";
 import useChatContext from "../hooks/useChatContext";
+import useDrawerContext from "../hooks/useDrawerContext";
 
 const ChatOverview = ({ item }) => {
     const { setActiveChat } = useChatContext();
+    const { activeDrawerContext } = useDrawerContext();
     const handleActiveChat = item => {
+        if (
+            !activeDrawerContext === "chat" ||
+            activeDrawerContext === "request"
+        )
+            return;
+        localStorage.setItem("lastActiveChat", JSON.stringify(item));
         setActiveChat(item);
     };
     return (

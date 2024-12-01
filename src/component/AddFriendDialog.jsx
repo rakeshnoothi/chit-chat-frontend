@@ -1,5 +1,4 @@
 import { useState } from "react";
-import PropTypes from "prop-types";
 import Button from "@mui/material/Button";
 import Avatar from "@mui/material/Avatar";
 import List from "@mui/material/List";
@@ -15,17 +14,16 @@ import { blue } from "@mui/material/colors";
 import { TextField, Typography } from "@mui/material";
 import axiosInstance from "../util/axiosInterceptor";
 import useAuthentication from "../hooks/useAuthentication";
-
-const emails = ["username@gmail.com", "user02@gmail.com"];
+import { toast } from "react-toastify";
 
 function SimpleDialog(props) {
     const { userAuthentication } = useAuthentication();
     const [addFriendList, setAddFriendList] = useState([]);
-    const { open, selectedValue, onClose } = props;
+    const { open, onClose } = props;
     let delay = null;
 
     const handleClose = () => {
-        onClose(selectedValue);
+        onClose("");
     };
 
     const handleSearchOnchange = e => {
@@ -36,11 +34,7 @@ function SimpleDialog(props) {
         delay = setTimeout(() => {
             // call to the database to find the user with the provided username
             axiosInstance
-                .get(
-                    `${
-                        import.meta.env.VITE_CHIT_CHAT_REST_API_BASE_URL
-                    }/user/username/${inputValue}`
-                )
+                .get(`/user/username/${inputValue}`)
                 .then(res => {
                     console.log("Friends response: ", res);
                     const data = res.data.body;
@@ -55,20 +49,15 @@ function SimpleDialog(props) {
 
     const handleAddFriendButtonClick = username => {
         axiosInstance
-            .post(
-                `${
-                    import.meta.env.VITE_CHIT_CHAT_REST_API_BASE_URL
-                }/friend-request/request`,
-                null,
-                {
-                    params: {
-                        senderId: userAuthentication.authData.user.id,
-                        receiverUsername: username,
-                    },
-                }
-            )
+            .post(`/friend-request/request`, null, {
+                params: {
+                    senderId: userAuthentication.authData.user.id,
+                    receiverUsername: username,
+                },
+            })
             .then(res => {
                 console.log("Friends response: ", res);
+                toast("Friend request sent successfully");
             })
             .catch(err => {
                 console.log("Friends error: ", err);
@@ -131,23 +120,15 @@ function SimpleDialog(props) {
     );
 }
 
-SimpleDialog.propTypes = {
-    onClose: PropTypes.func.isRequired,
-    open: PropTypes.bool.isRequired,
-    selectedValue: PropTypes.string.isRequired,
-};
-
 export default function AddFriendDialog() {
     const [open, setOpen] = useState(false);
-    const [selectedValue, setSelectedValue] = useState(emails[1]);
 
     const handleClickOpen = () => {
         setOpen(true);
     };
 
-    const handleClose = value => {
+    const handleClose = () => {
         setOpen(false);
-        setSelectedValue(value);
     };
 
     return (
@@ -155,11 +136,7 @@ export default function AddFriendDialog() {
             <Button variant="outlined" onClick={handleClickOpen}>
                 <PersonAddIcon />
             </Button>
-            <SimpleDialog
-                selectedValue={selectedValue}
-                open={open}
-                onClose={handleClose}
-            />
+            <SimpleDialog open={open} onClose={handleClose} />
         </div>
     );
 }

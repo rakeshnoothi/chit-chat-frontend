@@ -41,6 +41,11 @@ const webSockets = {
             });
         };
     },
+
+    disconnect: () => {
+        console.log("web sockets disconnected!!");
+        client.deactivate();
+    },
 };
 
 client.onStompError = function (frame) {
