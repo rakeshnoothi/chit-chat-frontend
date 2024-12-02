@@ -13,8 +13,6 @@ const ChatArea = () => {
     const formRef = useRef("");
 
     webSockets.onMessage(message => {
-        console.log("Message from chat area: ", message);
-
         const receivedMessage = {
             ...message,
             isSent: false,
@@ -86,14 +84,21 @@ const ChatArea = () => {
             overflow={"hidden"}
         >
             <Chat chatMessages={chatMessages[activeChat.tagLine]} />
-            <Stack direction={"row"} gap={1} component={"form"} ref={formRef}>
+            <Stack
+                direction={"row"}
+                gap={1}
+                component={"form"}
+                ref={formRef}
+                autoComplete="off"
+            >
                 <TextField
-                    id="outlined"
+                    id="chat-outlined"
                     size="small"
                     placeholder="Type your message"
                     fullWidth
                     name="message"
                     type="text"
+                    autoComplete=""
                 />
                 <Button
                     color="primary"
