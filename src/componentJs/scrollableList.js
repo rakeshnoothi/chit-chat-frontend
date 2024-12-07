@@ -30,12 +30,9 @@ const getMappedItem = (activeContext, item) => {
             break;
         }
         case "channels": {
-            // mappedObject.heading = item.firstname + " " + item.lastname;
-            // mappedObject.tagLine = item.username;
-            // mappedObject.id = item.id;
-            // return;
-
-            // do this later
+            mappedObject.heading = item.name;
+            mappedObject.tagLine = item.totalMembers;
+            mappedObject.id = item.id;
             break;
         }
 

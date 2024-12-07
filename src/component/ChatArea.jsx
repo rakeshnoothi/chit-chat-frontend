@@ -1,79 +1,33 @@
 import SendIcon from "@mui/icons-material/Send";
 import Chat from "./Chat";
 import { Button, Stack, TextField } from "@mui/material";
-import { useRef, useState } from "react";
-import webSockets from "../util/webSocket";
+import { useRef } from "react";
+import useChatMessageContext from "../hooks/useChatMessageContext";
 import useChatContext from "../hooks/useChatContext";
-import useAuthentication from "../hooks/useAuthentication";
+import useSideBarActiveContext from "../hooks/useSideBarActiveContext";
 
 const ChatArea = () => {
-    const [chatMessages, setChatMessages] = useState({});
-    const { userAuthentication } = useAuthentication();
+    const { chatMessages, sendMessage } = useChatMessageContext();
     const { activeChat } = useChatContext();
+    const { sideBarActiveContext } = useSideBarActiveContext();
     const formRef = useRef("");
-
-    webSockets.onMessage(message => {
-        const receivedMessage = {
-            ...message,
-            isSent: false,
-            id: crypto.randomUUID(),
-        };
-        setChatMessages(previousMessages => {
-            const allChatMessages = createNewAllChatMessages(
-                previousMessages,
-                message.fromUser,
-                receivedMessage
-            );
-            return allChatMessages;
-        });
-    });
 
     const handleSendMessage = e => {
         e.preventDefault();
 
-        const message = formRef.current["message"].value;
-        const chatMessage = {
-            toUser: activeChat.tagLine,
-            fromUser: userAuthentication.authData.user.username,
-            message: message,
-        };
+        const text = formRef.current["message"].value;
+
         try {
-            if (!activeChat) return;
-            webSockets.sendMessage(chatMessage);
-
-            // Add extra information if needed.
-            const sentChatMessage = {
-                ...chatMessage,
-                isSent: true,
-                id: crypto.randomUUID(),
-            };
-
-            //store all the messages in application state.
-            const allChatMessages = createNewAllChatMessages(
-                chatMessages,
-                chatMessage.toUser,
-                sentChatMessage
-            );
-            setChatMessages(allChatMessages);
-        } catch (err) {
-            // Handle error somehow
-            console.log("Error due to STOMP: ", err);
-        } finally {
+            sendMessage(text);
+            // clear the input text
             formRef.current["message"].value = "";
+        } catch (err) {
+            // TODO: do something with the error
+            console.log(
+                "[ChatArea] -> handleSendMessage: Error sending message",
+                err
+            );
         }
-    };
-
-    const createNewAllChatMessages = (previousMessages, user, newMessage) => {
-        const allMessages = { ...previousMessages };
-
-        if (allMessages[user]) {
-            allMessages[user] = [...allMessages[user], newMessage];
-        } else {
-            // create new key with the toUsername
-            allMessages[user] = [newMessage];
-        }
-
-        return allMessages;
     };
 
     return (
@@ -83,7 +37,13 @@ const ChatArea = () => {
             gap={2}
             overflow={"hidden"}
         >
-            <Chat chatMessages={chatMessages[activeChat.tagLine]} />
+            <Chat
+                chatMessages={
+                    sideBarActiveContext === "friends"
+                        ? chatMessages[activeChat.tagLine]
+                        : chatMessages[activeChat.id]
+                }
+            />
             <Stack
                 direction={"row"}
                 gap={1}

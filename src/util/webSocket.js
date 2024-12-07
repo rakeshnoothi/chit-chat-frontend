@@ -1,5 +1,10 @@
 import { Client } from "@stomp/stompjs";
 
+const PRIVATE_MESSAGE_SENDING_URL = "/app/private/message";
+const PRIVATE_MESSAGE_RECEIVING_URL = "/user/queue/private/messages";
+const CHANNEL_MESSAGE_SENDING_URL = "/app/channel/message";
+const CHANNEL_MESSAGE_RECEIVING_URL = "/user/queue/channel/messages";
+
 const client = new Client({
     brokerURL: import.meta.env.VITE_CHIT_CHAT_WEBSOCKET_BASE_URL,
 
@@ -11,43 +16,6 @@ const client = new Client({
     heartbeatOutgoing: 4000,
 });
 
-const PRIVATE_MESSAGE_SENDING_URL = "/app/private/message";
-const PRIVATE_MESSAGE_RECEIVING_URL = "/user/queue/private/messages";
-
-const webSockets = {
-    connect: token => {
-        client.connectHeaders = {
-            Authorization: `Bearer ${token}`,
-        };
-        client.activate();
-    },
-    sendMessage: function (message) {
-        client.publish({
-            destination: PRIVATE_MESSAGE_SENDING_URL,
-            body: JSON.stringify(message),
-            skipContentLengthHeader: true,
-        });
-    },
-    onMessage: callback => {
-        client.onConnect = function (frame) {
-            // Do something, all subscribes must be done is this callback
-            // This is needed because this will be executed after a (re)connect
-            console.log("webSockets connected: ", frame);
-            client.subscribe(PRIVATE_MESSAGE_RECEIVING_URL, res => {
-                const message = JSON.parse(res.body);
-                if (message) {
-                    callback(message);
-                }
-            });
-        };
-    },
-
-    disconnect: () => {
-        console.log("web sockets disconnected!!");
-        client.deactivate();
-    },
-};
-
 client.onStompError = function (frame) {
     // Will be invoked in case of error encountered at Broker
     // Bad login/passcode typically will cause an error
@@ -57,4 +25,54 @@ client.onStompError = function (frame) {
     console.log("Additional details: " + frame.body);
 };
 
-export default webSockets;
+const webSocket = {
+    connect: token => {
+        client.connectHeaders = {
+            Authorization: `Bearer ${token}`,
+        };
+        client.activate();
+        console.log("[webSocket] -> connect: socket connection opened");
+    },
+    disconnect: () => {
+        client.deactivate();
+        console.log("[webSocket] -> disconnect: socket connection closed");
+    },
+    sendPrivateMessage: message => {
+        client.publish({
+            destination: PRIVATE_MESSAGE_SENDING_URL,
+            body: JSON.stringify(message),
+            skipContentLengthHeader: true,
+        });
+    },
+    sendChannelMessage: message => {
+        client.publish({
+            destination: CHANNEL_MESSAGE_SENDING_URL,
+            body: JSON.stringify(message),
+            skipContentLengthHeader: true,
+        });
+    },
+    onMessage: callback => {
+        client.onConnect = function (frame) {
+            console.log("webSockets connected: ", frame);
+            client.subscribe(PRIVATE_MESSAGE_RECEIVING_URL, res => {
+                console.log(
+                    "[webSocket] -> onMessage: Response from " +
+                        PRIVATE_MESSAGE_RECEIVING_URL +
+                        " subscription"
+                );
+                callback(res);
+            });
+
+            client.subscribe(CHANNEL_MESSAGE_RECEIVING_URL, res => {
+                console.log(
+                    "[webSocket] -> onMessage: Response from " +
+                        CHANNEL_MESSAGE_RECEIVING_URL +
+                        " subscription"
+                );
+                callback(res);
+            });
+        };
+    },
+};
+
+export default webSocket;

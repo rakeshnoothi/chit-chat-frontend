@@ -24,7 +24,7 @@ const ScrollableList = () => {
         scrollableList
             .requestInitialListData(sideBarActiveContext, loggedInUserId)
             .then(res => {
-                console.log(res);
+                console.log("Initial scroll list data", res);
                 const data = res.data.body;
 
                 // map the response data based on the active context.
@@ -52,7 +52,7 @@ const ScrollableList = () => {
                 listData.map(item => {
                     return appButtons[activeDrawerContext].overViewElement(
                         item,
-                        item.tagLine,
+                        item.id,
                         handleListData
                     );
                 })
